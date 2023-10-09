@@ -27,6 +27,26 @@ contract A {
         B b = B(_bAddress);
         b.setNum(_num);
     }
+
+    /*
+     * 使用 call 函数调用合约B 中的函数
+     * 这里的调用 合约B 中的 setNum函数之后,结果是存储在B合约中的
+     */
+    
+    function bSetNumCall(address _bAddress, uint _num) public {
+        (bool res, ) = _bAddress.call(abi.encodeWithSignature("setNum(uint256)", _num));
+        if (!res) revert();
+    }
+
+    /*
+     * 使用 delegatecall 调用合约 B 中的函数
+     * 这里调用合约B中的setNum函数之后,结果是存储在了当前合约中,即A合约中,而不想要B合约中的状态变量的值
+     * 这里也就说明了,call和delegatecall的区别
+     */ 
+    function bSetNumDelegatecall(address _bAddress, uint _num) public {
+        (bool res,) = _bAddress.delegatecall(abi.encodeWithSignature("setNum(uint256)", _num));
+        if (!res) revert();
+    }
 }
 
 contract B {
